@@ -15,7 +15,7 @@ from sqlalchemy.dialects import postgresql
 revision: str = '4dffe048bf59'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = '16c052e011bc'
+depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade():
@@ -24,6 +24,8 @@ def upgrade():
         'text',
         sa.Column('text_id', sa.Integer, primary_key=True, autoincrement=True),
         sa.Column('text', sa.Text, nullable=False),
+        sa.Column('topic', sa.String(length=50), nullable=False),
+        sa.Column('difficult', sa.String(length=50), nullable=False),
         sa.Column('created_at', sa.TIMESTAMP, server_default=sa.func.now(), nullable=False),
         sa.Column('updated_at', sa.TIMESTAMP, server_default=sa.func.now(), onupdate=sa.func.now(), nullable=False),
     )

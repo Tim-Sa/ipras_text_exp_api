@@ -1,6 +1,6 @@
 """create_answer_table
 
-Revision ID: 2561e276a120
+Revision ID: 4dffe048bf59
 Revises:
 Create Date: 2024-11-23 13:32:30.363465
 
@@ -15,7 +15,7 @@ from sqlalchemy.dialects import postgresql
 revision: str = '2561e276a120'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = '4dffe048bf59'
+depends_on: Union[str, Sequence[str], None] = '16c052e011bc'
 
 
 def upgrade() -> None:

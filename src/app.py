@@ -68,22 +68,6 @@ async def get_answers_by_text(text_id: int):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.post("/answers/", response_description="Добавить новый ответ")
-async def create_answer(answer: Answer):
-    """
-    Добавление нового ответа в базу данных.
-    :param answer: Ответ, который нужно сохранить. 
-                   Поля: user_id, text_id, difficult, interest.
-    :return: {"answer_id": answer_id, "message": "Ответ успешно добавлен!"}
-    """
-    try:
-        answer_id = await db.write_answer(db.PoolProvider.pool, answer)
-        return {"answer_id": answer_id, "message": "Ответ успешно добавлен!"}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-
 @app.post("/users/", response_description="Добавить нового пользователя")
 async def add_user():
     """
