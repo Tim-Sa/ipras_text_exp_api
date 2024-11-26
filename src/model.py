@@ -14,3 +14,9 @@ class Text(BaseModel):
     text:      str
     topic:     str 
     difficult: str
+
+
+class TextWrite(BaseModel):
+    text:      str
+    topic:     str 
+    difficult: str

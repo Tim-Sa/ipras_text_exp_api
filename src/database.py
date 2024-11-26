@@ -3,7 +3,7 @@ from typing import List, Optional
 from dotenv import load_dotenv
 
 import asyncpg
-from model import Answer
+from model import Answer, Text, TextWrite
 
 
 class PoolProvider():
@@ -88,11 +88,13 @@ async def write_answer(pool: any, answer: Answer) -> int:
             raise ValueError(f"Answer already exists for user_id {answer.user_id} and text_id {answer.text_id}")
 
         # If no existing answer, insert the new one
-        answer_id = await connection.fetchval(query_insert, 
-                                              answer.user_id, 
-                                              answer.text_id, 
-                                              answer.difficult, 
-                                              answer.interest)
+        answer_id = await connection.fetchval(
+            query_insert, 
+            answer.user_id, 
+            answer.text_id, 
+            answer.difficult, 
+            answer.interest
+        )
 
         return answer_id
 
@@ -142,33 +144,66 @@ async def create_user(pool: any) -> int:
         return user_id
 
 
-
-async def read_texts(pool) -> List[dict]:
+async def create_text(pool, text: TextWrite) -> Text:
     async with pool.acquire() as connection:
-        query = "SELECT * FROM texts;"
+        query = """
+        INSERT INTO text (text, topic, difficult) 
+        VALUES ($1, $2, $3) RETURNING text_id;
+        """
+        text_id = await connection.fetchval(query, text.text, text.topic, text.difficult)
+        text = dict(text)
+        text['id'] = text_id
+        return text
+
+
+async def read_texts(pool) -> List[Text]:
+    async with pool.acquire() as connection:
+        query = """
+            SELECT 
+                text_id AS id,
+                text, 
+                topic,
+                difficult 
+            FROM text;
+        """
         rows = await connection.fetch(query)
         return [dict(row) for row in rows]
 
 
-async def read_text(pool, text_id: int) -> Optional[dict]:
+async def read_text(pool, text_id: int) -> Optional[Text]:
     async with pool.acquire() as connection:
-        query = "SELECT * FROM texts WHERE id = $1;"
+        query = """
+            SELECT 
+                text_id AS id,
+                text, 
+                topic,
+                difficult 
+            FROM text
+            WHERE text_id = $1;
+        """
         row = await connection.fetchrow(query, text_id)
         return dict(row) if row else None
 
 
-async def update_text(pool, text_id: int, updated_text) -> Optional[dict]:
+async def update_text(pool, updated_text: Text) -> Optional[Text]:
     async with pool.acquire() as connection:
         query = """
-        UPDATE texts 
+        UPDATE text
         SET text = $1, topic = $2, difficult = $3 
-        WHERE id = $4 RETURNING id, text, topic, difficult;
+        WHERE text_id = $4
+        RETURNING text_id AS id, text, topic, difficult;
         """
-        row = await connection.fetchrow(query, updated_text.text, updated_text.topic, updated_text.difficult, text_id)
+        row = await connection.fetchrow(
+            query, 
+            updated_text.text, 
+            updated_text.topic, 
+            updated_text.difficult, 
+            updated_text.id
+        )
         return dict(row) if row else None
 
 
 async def delete_text(pool, text_id: int) -> None:
     async with pool.acquire() as connection:
-        query = "DELETE FROM texts WHERE id = $1;"
+        query = "DELETE FROM text WHERE text_id = $1;"
         await connection.execute(query, text_id)

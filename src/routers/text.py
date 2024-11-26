@@ -1,6 +1,6 @@
 from typing import List
 from fastapi import APIRouter, HTTPException
-from model import Text
+from model import Text, TextWrite
 import database as db
 
 router = APIRouter()
@@ -17,7 +17,7 @@ async def shutdown():
 
 
 @router.post("/texts/", response_model=Text)
-async def create_text_endpoint(text: Text):
+async def create_text_endpoint(text: TextWrite):
     try:
         return await db.create_text(db.PoolProvider.pool, text)
     
@@ -48,9 +48,9 @@ async def read_text_endpoint(text_id: int):
 
 
 @router.put("/texts/{text_id}", response_model=Text)
-async def update_text_endpoint(text_id: int, updated_text: Text):
+async def update_text_endpoint(updated_text: Text):
     try:
-        text = await db.update_text(db.PoolProvider.pool, text_id, updated_text)
+        text = await db.update_text(db.PoolProvider.pool, updated_text)
         if text is None:
             raise HTTPException(status_code=404, detail="Text not found")
         return Text(**text)
