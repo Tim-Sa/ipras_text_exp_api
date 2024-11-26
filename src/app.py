@@ -3,7 +3,7 @@ from typing import List
 from fastapi import FastAPI, HTTPException
 import database as db
 from model import Answer
-
+from routers import text
 app = FastAPI()
 
 
@@ -80,6 +80,8 @@ async def add_user():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
+app.include_router(text.router)
 
 if __name__ == "__main__":
     import uvicorn

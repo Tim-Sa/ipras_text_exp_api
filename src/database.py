@@ -1,5 +1,5 @@
 import os
-from typing import List
+from typing import List, Optional
 from dotenv import load_dotenv
 
 import asyncpg
@@ -140,3 +140,35 @@ async def create_user(pool: any) -> int:
         """
         user_id = await connection.fetchval(query_insert_user)
         return user_id
+
+
+
+async def read_texts(pool) -> List[dict]:
+    async with pool.acquire() as connection:
+        query = "SELECT * FROM texts;"
+        rows = await connection.fetch(query)
+        return [dict(row) for row in rows]
+
+
+async def read_text(pool, text_id: int) -> Optional[dict]:
+    async with pool.acquire() as connection:
+        query = "SELECT * FROM texts WHERE id = $1;"
+        row = await connection.fetchrow(query, text_id)
+        return dict(row) if row else None
+
+
+async def update_text(pool, text_id: int, updated_text) -> Optional[dict]:
+    async with pool.acquire() as connection:
+        query = """
+        UPDATE texts 
+        SET text = $1, topic = $2, difficult = $3 
+        WHERE id = $4 RETURNING id, text, topic, difficult;
+        """
+        row = await connection.fetchrow(query, updated_text.text, updated_text.topic, updated_text.difficult, text_id)
+        return dict(row) if row else None
+
+
+async def delete_text(pool, text_id: int) -> None:
+    async with pool.acquire() as connection:
+        query = "DELETE FROM texts WHERE id = $1;"
+        await connection.execute(query, text_id)
