@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+    image: text-exp-api:v0.0.1a
+    restart: unless-stopped
+    ports:
+      - 0.0.0.0:8080:8000 
+    environment:
+      PSQL_DB_USERNAME: ${PSQL_DB_USERNAME}
+      PSQL_DB_PASSWORD: ${PSQL_DB_PASSWORD}
+      PSQL_DB_HOST: ${PSQL_DB_HOST}
+      PSQL_DB_PORT: ${PSQL_DB_PORT}
+      PSQL_DB_DATABASE_NAME: ${PSQL_DB_DATABASE_NAME}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"

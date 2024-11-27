@@ -3,3 +3,9 @@ dev_local_run:
 
 migrations:
 	venv/bin/python -m alembic upgrade heads
+
+run:
+	docker-compose up --force-recreate -d
+
+stop:
+	docker-compose down

@@ -1,9 +1,12 @@
 # main.py
 from typing import List
+
 from fastapi import FastAPI, HTTPException
+
 import database as db
 from model import Answer
 from routers import text
+
 app = FastAPI()
 
 
@@ -85,4 +88,4 @@ app.include_router(text.router)
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8000)
