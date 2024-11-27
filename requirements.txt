@@ -1,5 +1,3 @@
-aioredis==2.0.1
-aioredis3==2.0.1
 alembic==1.14.0
 annotated-types==0.7.0
 anyio==4.6.2.post1
@@ -23,6 +21,7 @@ psycopg2-binary==2.9.10
 pydantic==2.10.1
 pydantic_core==2.27.1
 python-dotenv==1.0.1
+redis==5.2.0
 sniffio==1.3.1
 SQLAlchemy==2.0.36
 starlette==0.41.3

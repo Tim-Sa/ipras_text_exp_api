@@ -5,7 +5,11 @@ migrations:
 	venv/bin/python -m alembic upgrade heads
 
 run:
-	docker-compose up --force-recreate -d
+	docker-compose up --force-recreate -d -V
 
 stop:
-	docker-compose down
+	docker-compose down --rmi all
+
+restart:
+	make stop
+	make run

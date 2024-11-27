@@ -2,7 +2,7 @@ import os
 import json
 from typing import List
 
-import aioredis
+from redis import asyncio as aioredis
 from dotenv import load_dotenv
 
 from fastapi import APIRouter, HTTPException, Depends
@@ -16,7 +16,7 @@ router = APIRouter()
 if os.path.exists('.env'):
     load_dotenv()
 
-REDIS_URL = f"redis://{os.getenv['REDIS_HOST']}:{os.getenv['REDIS_PORT']}"
+REDIS_URL = f"redis://{os.getenv('REDIS_HOST')}:{os.getenv('REDIS_PORT')}"
 
 
 async def get_redis() -> aioredis.Redis:
@@ -47,12 +47,12 @@ async def read_texts_endpoint(redis: aioredis.Redis = Depends(get_redis)) -> Lis
     try:
         cached_texts = await redis.get("text:all")
         if cached_texts:
-            return JSONResponse(content=cached_texts, status_code=200)
+            return JSONResponse(content=json.loads(cached_texts), status_code=200)
 
         texts = await db.read_texts(db.PoolProvider.pool)
         texts_model = [Text(**text) for text in texts]
 
-        await redis.set("text:all", json.dumps(texts_model.dict()))  
+        await redis.set("text:all", json.dumps([text.dict() for text in texts_model]))  
 
         return texts_model
 
@@ -69,7 +69,7 @@ async def read_text_endpoint(
 
         cached_text = await redis.get(f"text:{text_id}")
         if cached_text:
-            return JSONResponse(content=cached_text, status_code=200)
+            return JSONResponse(content=json.loads(cached_text), status_code=200)
 
         text = await db.read_text(db.PoolProvider.pool, text_id)
         if text is None:
