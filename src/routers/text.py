@@ -34,12 +34,12 @@ async def shutdown():
     await db.PoolProvider.close_pool()
 
 
-@router.post("/texts/", response_model=Text)
-async def create_text_endpoint(text: TextWrite):
-    try:
-        return await db.create_text(db.PoolProvider.pool, text)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+# @router.post("/texts/", response_model=Text)
+# async def create_text_endpoint(text: TextWrite):
+#     try:
+#         return await db.create_text(db.PoolProvider.pool, text)
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get("/texts/", response_model=List[Text])
@@ -84,23 +84,23 @@ async def read_text_endpoint(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.put("/texts/{text_id}", response_model=Text)
-async def update_text_endpoint(updated_text: Text):
-    try:
-        text = await db.update_text(db.PoolProvider.pool, updated_text)
-        if text is None:
-            raise HTTPException(status_code=404, detail="Text not found")
-        return Text(**text)
+# @router.put("/texts/{text_id}", response_model=Text)
+# async def update_text_endpoint(updated_text: Text):
+#     try:
+#         text = await db.update_text(db.PoolProvider.pool, updated_text)
+#         if text is None:
+#             raise HTTPException(status_code=404, detail="Text not found")
+#         return Text(**text)
 
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.delete("/texts/{text_id}", response_model=dict)
-async def delete_text_endpoint(text_id: int):
-    try:
-        await db.delete_text(db.PoolProvider.pool, text_id)
-        return {"detail": "Text deleted successfully"}
+# @router.delete("/texts/{text_id}", response_model=dict)
+# async def delete_text_endpoint(text_id: int):
+#     try:
+#         await db.delete_text(db.PoolProvider.pool, text_id)
+#         return {"detail": "Text deleted successfully"}
 
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=str(e))
